@@ -1,0 +1,71 @@
+/* .sidebar {
+  width: 16rem;
+  z-index: 202;
+  background: black;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  transition: transform 0.3s ease;
+  transform: translateX(0);
+}
+
+.hidden {
+  display: none;
+}
+
+.hiddenOnMobile {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.closeButton svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+} */
+
+/* sidebar.module.css */
+
+.sidebar {
+  width: 16rem;
+  z-index: 202;
+  background: black;
+  position: sticky;
+  top: 0;
+  left: 0; /* Show sidebar by default on larger screens */
+  height: 100vh;
+  transition: left 0.3s ease;
+}
+
+.hiddenOnMobile {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.closeButton svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}

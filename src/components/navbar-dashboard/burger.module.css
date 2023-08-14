@@ -1,0 +1,79 @@
+/* Normal CSS */
+
+/* Styles for screens smaller than or equal to md */
+@media (max-width: 767px) {
+  .StyledBurgerButton {
+    display: flex;
+    top: 0;
+    left: 0;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 202;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .StyledBurgerButton:focus {
+    outline: none;
+  }
+
+  .StyledBurgerButton div {
+    width: 22px;
+    height: 1px;
+    background: #f0f0f0; /* Replace with your background color */
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    position: relative;
+    transform-origin: 1px;
+  }
+
+  .StyledBurgerButton div:first-child {
+    transform: translateY(-4px) rotate(0deg);
+    height: 1px;
+    margin-top: 10px;
+  }
+
+  .StyledBurgerButton div:nth-child(2) {
+    transform: translateY(4px) rotate(0deg);
+    height: 1px;
+    margin-bottom: 10px;
+  }
+
+  /* Styles for the open variant */
+  .StyledBurgerButton.open-true div:first-child {
+    margin-top: 0px;
+    transform: translateY(1px) rotate(45deg);
+  }
+
+  .StyledBurgerButton.open-true div:nth-child(2) {
+    margin-bottom: 0px;
+    transform: translateY(4px) rotate(-45deg);
+  }
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.toggleButtonMobile {
+  background-color: #333; /* Change this to your desired color */
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.toggleButtonMobile:hover {
+  background-color: #555; /* Change this to the hover color you want */
+}
