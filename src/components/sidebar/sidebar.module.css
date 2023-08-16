@@ -39,7 +39,7 @@
 
 .sidebar {
   width: 16rem;
-  z-index: 202;
+  z-index: 3;
   background: black;
   position: sticky;
   top: 0;
