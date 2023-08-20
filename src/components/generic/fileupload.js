@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './fileupload.module.css';
+import { toast } from 'react-toastify';
 
 function ImageUpload({
   name,
@@ -9,6 +10,7 @@ function ImageUpload({
   showPreview = true,
   theme = 'light',
   onFileChange,
+  number,
   ...rest
 }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -52,7 +54,20 @@ function ImageUpload({
   const handleDrop = (event) => {
     event.preventDefault();
     setDragOver(false);
-    const files = event.dataTransfer.files;
+    let files = event.dataTransfer.files;
+    if (files.length > number) {
+      files = Array.from(files).slice(0, number);
+      toast.error(`Cannot upload more than ${number} images`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+    }
     setSelectedFiles(files);
     const newPreviewUrls = Array.from(files).map((file) =>
       URL.createObjectURL(file)

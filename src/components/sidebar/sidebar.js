@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { useSidebarContext } from '@/app/dashboard/layout.context';
 import styles from './sidebar.module.css';
+import { sidebarArray } from './sidebarMenuItems';
+import SidebarLinks from './sidebarlinks';
 
 const Sidebar = () => {
-  const router = useRouter();
   const { collapsed, setCollapsed } = useSidebarContext();
   const sidebarRef = useRef(null);
+  const pathname = usePathname();
 
   return (
     <div
@@ -34,9 +36,22 @@ const Sidebar = () => {
         </button>
       )}
 
-      {/* Sidebar content */}
-      <h1>jello</h1>
-      {/* For example, you can put navigation links here */}
+      <h1 className={`border-b border-divider ${styles.logoSidebar}`}>
+        Logo Comes Here
+      </h1>
+
+      <div className='mt-3'>
+        {sidebarArray.map((item) => {
+          return (
+            <SidebarLinks
+              key={item.title}
+              title={item.title}
+              route={item.route}
+              isActive={pathname === item.route}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };

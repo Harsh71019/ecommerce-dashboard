@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Modal,
   ModalContent,
@@ -6,10 +6,9 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  useDisclosure,
 } from '@nextui-org/react';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useDeleteProductMutation } from '@/redux/services/productApi'; // Adjust the path as needed
+import { toast } from 'react-toastify';
 
 export default function DeleteProduct({
   isOpen,
@@ -24,6 +23,34 @@ export default function DeleteProduct({
     await deleteProduct(id);
   }
 
+  useEffect(() => {
+    if (error) {
+      toast.error('Product Delete Failed', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+    }
+
+    if (data) {
+      toast.success('Deleted Product Successfully', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+    }
+  }, [error, data]);
+
   return (
     <>
       <Modal isOpen={isOpen} onOpenChange={onClose} isDismissable={false}>
@@ -35,7 +62,7 @@ export default function DeleteProduct({
               </ModalHeader>
               <ModalBody>
                 Are you sure you wanna delete the product this is a irrevesible
-                action! {selectedProductId}
+                action!
               </ModalBody>
               <ModalFooter>
                 <Button

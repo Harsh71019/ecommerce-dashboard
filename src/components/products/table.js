@@ -8,22 +8,19 @@ import {
   TableCell,
   Chip,
   Tooltip,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
   Button,
 } from '@nextui-org/react';
 import { EditIcon } from '@/icons/EditIcon';
 import { DeleteIcon } from '@/icons/DeleteIcon';
 import { EyeIcon } from '@/icons/EyeIcon';
-import { VerticalDotsIcon } from '@/icons/VerticalDotsIcon';
 
 import { useGetProductsQuery } from '@/redux/services/productApi'; // Adjust the path as needed
 import { Pagination } from '@nextui-org/react';
 import DeleteProduct from './deletemodal';
 import EditProductModal from './editmodal';
 import ViewProductModal from './viewproduct';
+import DownloadCSV from '@/components/generic/csv'; // Adjust the path as needed
+import { useRouter } from 'next/navigation';
 
 const statusColorMap = {
   active: 'success',
@@ -43,6 +40,7 @@ const columns = [
 ];
 
 export default function ProductTable() {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({}); // Replace with your filter state
 
@@ -112,7 +110,27 @@ export default function ProductTable() {
 
   return (
     <>
-      <h1 className='mb-3'>Products</h1>
+      <div className='flex justify-between mb-7'>
+        <div>
+          <h1 className='text-2xl'>Products</h1>
+        </div>
+        <div>
+          {!isLoading && productsObject && productsObject.products && (
+            <Button color='warning' className='mr-5'>
+              <DownloadCSV filename='products' data={productsObject.products} />
+            </Button>
+          )}
+
+          <Button
+            color='primary'
+            onClick={() => {
+              router.push('products/add');
+            }}
+          >
+            Add Products
+          </Button>
+        </div>
+      </div>
       <Table
         isLoading={isLoading}
         aria-label='Example table with dynamic content'
@@ -195,25 +213,31 @@ function renderCell(
       );
     case 'actions':
       return (
-        <div className='relative flex justify-end items-center gap-2'>
-          <Dropdown>
-            <DropdownTrigger>
-              <Button isIconOnly size='sm' variant='light'>
-                <VerticalDotsIcon className='text-default-300' />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu>
-              <DropdownItem onClick={() => handleViewIconClick(product)}>
-                View
-              </DropdownItem>{' '}
-              <DropdownItem onClick={() => handleEditIconClick(product)}>
-                Edit
-              </DropdownItem>
-              <DropdownItem onClick={() => handleDeleteIconClick(product._id)}>
-                Delete
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+        <div className='relative flex items-center gap-2'>
+          <Tooltip content='Details'>
+            <span
+              onClick={() => handleViewIconClick(product)}
+              className='text-lg text-default-400 cursor-pointer active:opacity-50'
+            >
+              <EyeIcon />
+            </span>
+          </Tooltip>
+          <Tooltip content='Edit user'>
+            <span
+              onClick={() => handleEditIconClick(product)}
+              className='text-lg text-default-400 cursor-pointer active:opacity-50'
+            >
+              <EditIcon />
+            </span>
+          </Tooltip>
+          <Tooltip color='danger' content='Delete user'>
+            <span
+              onClick={() => handleDeleteIconClick(product._id)}
+              className='text-lg text-danger cursor-pointer active:opacity-50'
+            >
+              <DeleteIcon />
+            </span>
+          </Tooltip>
         </div>
       );
     default:

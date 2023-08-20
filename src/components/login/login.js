@@ -8,8 +8,8 @@ import { yupResolver } from '@hookform/resolvers/yup'; // Import yupResolver
 import { useLoginUserMutation } from '@/redux/services/userApi'; // Adjust the path as needed
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { redirect, useRouter } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useRouter } from 'next/navigation';
+import { useAppDispatch } from '@/redux/hooks';
 import { setAuthenticated } from '@/redux/features/authSlice';
 import { setCookie } from 'cookies-next';
 
@@ -24,9 +24,6 @@ const schema = yup.object().shape({
 function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector(
-    (state) => state.authReducer.isAuthenticated
-  );
   const [loginUser, { data, error, isLoading }] = useLoginUserMutation();
 
   const onSubmit = async (data) => {

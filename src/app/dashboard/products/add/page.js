@@ -1,16 +1,18 @@
 'use client';
-import ProductTable from '@/components/products/table';
 import React from 'react';
+import AddProductModal from '@/components/products/addmodal';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
-const Page = () => {
+const page = () => {
   return (
     <div className='p-5 mt-5'>
-      <ProductTable />
+      <div className='container mx-auto'>
+        <AddProductModal />
+      </div>
       <ToastContainer />
     </div>
   );
 };
 
-export default Page;
+export default page;
