@@ -4,6 +4,7 @@ import { useSidebarContext } from '@/app/dashboard/layout.context';
 import styles from './sidebar.module.css';
 import { sidebarArray } from './sidebarMenuItems';
 import SidebarLinks from './sidebarlinks';
+import { Heart } from 'phosphor-react';
 
 const Sidebar = () => {
   const { collapsed, setCollapsed } = useSidebarContext();
@@ -44,6 +45,7 @@ const Sidebar = () => {
         {sidebarArray.map((item) => {
           return (
             <SidebarLinks
+              icon={item.icon}
               key={item.title}
               title={item.title}
               route={item.route}

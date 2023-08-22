@@ -21,6 +21,7 @@ import EditProductModal from './editmodal';
 import ViewProductModal from './viewproduct';
 import DownloadCSV from '@/components/generic/csv'; // Adjust the path as needed
 import { useRouter } from 'next/navigation';
+import { PlusCircle } from 'phosphor-react';
 
 const statusColorMap = {
   active: 'success',
@@ -114,7 +115,7 @@ export default function ProductTable() {
         <div>
           <h1 className='text-2xl'>Products</h1>
         </div>
-        <div>
+        <div className='flex'>
           {!isLoading && productsObject && productsObject.products && (
             <Button color='warning' className='mr-5'>
               <DownloadCSV filename='products' data={productsObject.products} />
@@ -127,6 +128,12 @@ export default function ProductTable() {
               router.push('products/add');
             }}
           >
+            <PlusCircle
+              size={24}
+              className='mr-1'
+              color='white'
+              weight='fill'
+            />{' '}
             Add Products
           </Button>
         </div>

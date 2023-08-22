@@ -11,35 +11,114 @@ function ImageUpload({
   theme = 'light',
   onFileChange,
   number,
+  maxWidth,
+  maxHeight,
+  maxSizeKB,
   ...rest
 }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [dragOver, setDragOver] = useState(false);
 
+  // const handleFileChange = (event) => {
+  //   const files = event.target.files;
+  //   setSelectedFiles(files);
+  //   const newPreviewUrls = Array.from(files).map((file) =>
+  //     URL.createObjectURL(file)
+  //   );
+  //   setPreviewUrls(newPreviewUrls);
+
+  //   if (onFileChange) {
+  //     const newFileDataUrls = Array.from(files).map((file) => {
+  //       const reader = new FileReader();
+  //       return new Promise((resolve) => {
+  //         reader.onload = () => {
+  //           resolve(reader.result);
+  //         };
+  //         reader.readAsDataURL(file);
+  //       });
+  //     });
+
+  //     Promise.all(newFileDataUrls).then((dataUrls) => {
+  //       onFileChange(dataUrls);
+  //     });
+  //   }
+  // };
+
   const handleFileChange = (event) => {
     const files = event.target.files;
-    setSelectedFiles(files);
-    const newPreviewUrls = Array.from(files).map((file) =>
-      URL.createObjectURL(file)
-    );
-    setPreviewUrls(newPreviewUrls);
+    const newSelectedFiles = [];
+    const newPreviewUrls = [];
 
-    if (onFileChange) {
-      const newFileDataUrls = Array.from(files).map((file) => {
-        const reader = new FileReader();
-        return new Promise((resolve) => {
-          reader.onload = () => {
-            resolve(reader.result);
-          };
-          reader.readAsDataURL(file);
-        });
-      });
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = function () {
+        const img = new Image();
 
-      Promise.all(newFileDataUrls).then((dataUrls) => {
-        onFileChange(dataUrls);
-      });
-    }
+        img.onload = function () {
+          if (
+            (maxWidth && img.width > maxWidth) ||
+            (maxHeight && img.height > maxHeight)
+          ) {
+            toast.error(
+              `Image dimensions exceed the maximum allowed size (${maxWidth}x${maxHeight})`,
+              {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+              }
+            );
+          } else if (maxSizeKB && file.size > maxSizeKB * 1024) {
+            toast.error(
+              `File size exceeds the maximum allowed size (${maxSizeKB} KB)`,
+              {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+              }
+            );
+          } else {
+            newSelectedFiles.push(file);
+            newPreviewUrls.push(URL.createObjectURL(file));
+          }
+
+          if (newSelectedFiles.length === files.length) {
+            setSelectedFiles(newSelectedFiles);
+            setPreviewUrls(newPreviewUrls);
+
+            if (onFileChange) {
+              const newFileDataUrls = newSelectedFiles.map((file) => {
+                const reader = new FileReader();
+                return new Promise((resolve) => {
+                  reader.onload = () => {
+                    resolve(reader.result);
+                  };
+                  reader.readAsDataURL(file);
+                });
+              });
+
+              Promise.all(newFileDataUrls).then((dataUrls) => {
+                onFileChange(dataUrls);
+              });
+            }
+          }
+        };
+
+        img.src = reader.result;
+      };
+
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleDragOver = (event) => {

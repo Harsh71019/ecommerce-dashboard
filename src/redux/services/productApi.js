@@ -7,8 +7,7 @@ export const productApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:5000/api/',
     prepareHeaders: (headers) => {
-      // Add the bearer token to the headers
-      const token = getCookie('authToken'); // Assuming you store the token in local storage
+      const token = getCookie('authToken');
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }

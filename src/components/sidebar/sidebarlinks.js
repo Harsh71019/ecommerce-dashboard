@@ -18,7 +18,7 @@ const SidebarLinks = ({ title, isActive, route, icon }) => {
         isActive ? styles.isActiveLinkCSS : 'hover:bg-accents-2'
       }`}
         >
-          <NextLink href={route}>
+          <NextLink className='flex align-center' href={route}>
             {icon}
             <h1>{title}</h1>
           </NextLink>
