@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useCreateProductMutation } from '@/redux/services/productApi'; // Adjust the path as needed
 
 //Custom Components
-import ImageUpload from '../generic/fileupload';
+import ImageUpload from '../generic/fileupload/fileupload';
 
 const schema = yup.object().shape({
   name: yup.string().required('Product name is required'),
@@ -104,8 +104,7 @@ export default function AddProductModal() {
         progress: undefined,
         theme: 'dark',
       });
-      router.push('/dashboard/products');
-
+      router.push('/dashboard/products?update=true', { update: true });
       reset();
     }
   }, [error, data]);

@@ -71,10 +71,10 @@ export default function DeleteProduct({
                   variant='light'
                   onClick={() => {
                     deleteProductFinal(selectedProductId);
-                    onClose();
                     if (!error) {
                       onDeleteSuccess();
                     }
+                    onClose();
                   }}
                 >
                   Yes

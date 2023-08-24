@@ -20,31 +20,6 @@ function ImageUpload({
   const [previewUrls, setPreviewUrls] = useState([]);
   const [dragOver, setDragOver] = useState(false);
 
-  // const handleFileChange = (event) => {
-  //   const files = event.target.files;
-  //   setSelectedFiles(files);
-  //   const newPreviewUrls = Array.from(files).map((file) =>
-  //     URL.createObjectURL(file)
-  //   );
-  //   setPreviewUrls(newPreviewUrls);
-
-  //   if (onFileChange) {
-  //     const newFileDataUrls = Array.from(files).map((file) => {
-  //       const reader = new FileReader();
-  //       return new Promise((resolve) => {
-  //         reader.onload = () => {
-  //           resolve(reader.result);
-  //         };
-  //         reader.readAsDataURL(file);
-  //       });
-  //     });
-
-  //     Promise.all(newFileDataUrls).then((dataUrls) => {
-  //       onFileChange(dataUrls);
-  //     });
-  //   }
-  // };
-
   const handleFileChange = (event) => {
     const files = event.target.files;
     const newSelectedFiles = [];
@@ -195,7 +170,7 @@ function ImageUpload({
     }
   };
 
-  const containerClassName = theme === 'dark' ? 'bg-zinc-900' : 'bg-white';
+  const containerClassName = theme === 'dark' ? 'bg-black-800' : 'bg-white';
   const borderClassName = dragOver
     ? 'border-blue-500'
     : 'border-r border-divider';
@@ -222,7 +197,7 @@ function ImageUpload({
           Drag &amp; drop your images here, or click to select files.
         </p>
       </div>
-      <div className='grid grid-cols-2 gap-2'>
+      <div className='grid grid-cols-5 gap-2'>
         {showPreview &&
           previewUrls.map((url, index) => (
             <div key={index} className='relative'>

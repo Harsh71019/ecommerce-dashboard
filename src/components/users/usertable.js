@@ -11,12 +11,15 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Chip,
   Button,
   Tooltip,
+  Pagination,
 } from '@nextui-org/react';
 import { useGetUsersQuery } from '@/redux/services/userApi'; // Adjust the path as needed
 import DownloadCSV from '@/components/generic/csv'; // Adjust the path as needed
+import formatDateToDDMMYYYY from '@/utils/dateConvert';
+import PageRows from '@/data/pagesize';
+
 const statusColorMap = {
   active: 'success',
   paused: 'danger',
@@ -49,16 +52,30 @@ const columns = [
 ];
 
 export default function UserTable() {
-  const { data: users, isLoading, isError, refetch } = useGetUsersQuery(); // Pass currentPage and filters to the query
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
+  const [filters, setFilters] = useState({});
+  const {
+    data: users,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetUsersQuery({ currentPage, pageSize, filters }); // Pass currentPage and filters to the query
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  const handlePageSizeChange = (event) => {
+    setPageSize(parseInt(event.target.value));
+  };
 
   return (
     <>
       <div className='p-3'>
         <div className='flex justify-between'>
           <h1 className='text-2xl'>Users</h1>
-          {!isLoading && users && users && (
+          {!isLoading && users && users.users && (
             <Button color='warning' className='mr-5'>
-              <DownloadCSV filename='products' data={users} />
+              <DownloadCSV filename='products' data={users.users} />
             </Button>
           )}
         </div>
@@ -75,7 +92,8 @@ export default function UserTable() {
             <TableBody>
               {!isLoading &&
                 users &&
-                users.map((user) => (
+                users.users &&
+                users.users.map((user) => (
                   <TableRow key={user._id}>
                     {(columnKey) => (
                       <TableCell>{renderCell(user, columnKey)}</TableCell>
@@ -84,6 +102,29 @@ export default function UserTable() {
                 ))}
             </TableBody>
           </Table>
+          <div className='flex justify-between mt-5'>
+            <Pagination
+              showControls
+              total={users && users && users.users.pages}
+              onChange={handlePageChange}
+              page={currentPage}
+            />
+            <div>
+              <label htmlFor='select'>Rows per page:{pageSize} </label>
+              <select
+                className='rounded-md'
+                id='select'
+                value={pageSize}
+                onChange={handlePageSizeChange}
+              >
+                {PageRows.map((item) => (
+                  <option key={item.key} value={item.value}>
+                    {item.key}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </>
@@ -94,17 +135,6 @@ function renderCell(user, columnKey) {
   const cellValue = user[columnKey];
 
   switch (columnKey) {
-    case 'status':
-      return (
-        <Chip
-          className='capitalize'
-          color={statusColorMap[cellValue]}
-          size='sm'
-          variant='flat'
-        >
-          {cellValue}
-        </Chip>
-      );
     case 'actions':
       return (
         <div className='relative flex items-center gap-2'>
@@ -126,6 +156,12 @@ function renderCell(user, columnKey) {
         </div>
       );
     default:
-      return <p>{cellValue}</p>;
+      return (
+        <p>
+          {columnKey === 'createdAt'
+            ? formatDateToDDMMYYYY(cellValue)
+            : cellValue}
+        </p>
+      );
   }
 }

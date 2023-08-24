@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { Button, Input, Textarea } from '@nextui-org/react';
 import { toast } from 'react-toastify';
 import { FloppyDisk, PlusCircle, Trash } from 'phosphor-react';
-import ImageUpload from '@/components/generic/fileupload';
+import ImageUpload from '@/components/generic/fileupload/fileupload';
 
 const schema = yup.object().shape({
   hero: yup.object().shape({

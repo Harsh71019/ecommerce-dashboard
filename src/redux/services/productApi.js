@@ -16,8 +16,10 @@ export const productApi = createApi({
   }),
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: (page, filters) => ({
-        url: `products?page=${page}${filters ? filters : ' '}`,
+      query: (arg) => ({
+        url: `products?page=${arg.currentPage}&pageSize=${arg.pageSize}${
+          Object.keys(arg.filters).length !== 0 ? arg.filters : ''
+        }`,
       }),
     }),
     getProductById: builder.query({

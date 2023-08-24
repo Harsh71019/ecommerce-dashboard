@@ -16,7 +16,11 @@ export const userApi = createApi({
   }),
   endpoints: (builder) => ({
     getUsers: builder.query({
-      query: () => 'users',
+      query: (arg) => ({
+        url: `users?page=${arg.currentPage}&pageSize=${arg.pageSize}${
+          Object.keys(arg.filters).length !== 0 ? arg.filters : ''
+        }`,
+      }),
     }),
     getUserById: builder.query({
       query: ({ id }) => `users/${id}`,

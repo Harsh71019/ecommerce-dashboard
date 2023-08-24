@@ -17,7 +17,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useUpdateProductMutation } from '@/redux/services/productApi'; // Adjust the path as needed
 
 //Custom Components
-import ImageUpload from '../generic/fileupload';
+import ImageUpload from '../generic/fileupload/fileupload';
 
 const schema = yup.object().shape({
   name: yup.string().required('Product name is required'),

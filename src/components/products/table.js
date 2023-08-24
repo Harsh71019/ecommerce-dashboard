@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableHeader,
@@ -9,54 +9,70 @@ import {
   Chip,
   Tooltip,
   Button,
+  Pagination,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Input,
 } from '@nextui-org/react';
 import { EditIcon } from '@/icons/EditIcon';
 import { DeleteIcon } from '@/icons/DeleteIcon';
 import { EyeIcon } from '@/icons/EyeIcon';
 
 import { useGetProductsQuery } from '@/redux/services/productApi'; // Adjust the path as needed
-import { Pagination } from '@nextui-org/react';
 import DeleteProduct from './deletemodal';
 import EditProductModal from './editmodal';
 import ViewProductModal from './viewproduct';
 import DownloadCSV from '@/components/generic/csv'; // Adjust the path as needed
-import { useRouter } from 'next/navigation';
-import { PlusCircle } from 'phosphor-react';
-
-const statusColorMap = {
-  active: 'success',
-  paused: 'danger',
-  vacation: 'warning',
-};
-
-const columns = [
-  { label: 'Name', key: 'name' },
-  { label: 'Category', key: 'category' },
-  { label: 'Brand', key: 'brand' },
-  { label: '₹ Price', key: 'price' },
-  { label: '% Discount', key: 'discountPercentage' },
-  { label: 'Count', key: 'countInStock' },
-  { label: 'Rating', key: 'rating' },
-  { label: 'Actions', key: 'actions' },
-];
+import { useRouter, useSearchParams } from 'next/navigation';
+import { PlusCircle, CaretCircleDown, MagnifyingGlass } from 'phosphor-react';
+import PageRows from '@/data/pagesize';
+import {
+  columns,
+  INITIAL_VISIBLE_COLUMNS,
+  statusColorMap,
+} from './data/columns';
+import { debounce } from 'lodash';
 
 export default function ProductTable() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState({}); // Replace with your filter state
+  const [pageSize, setPageSize] = useState(15);
+  const [visibleColumns, setVisibleColumns] = React.useState(
+    new Set(INITIAL_VISIBLE_COLUMNS)
+  );
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null); // Add this line
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [filters, setFilters] = useState({
+    search: '',
+  });
+
+  const [finalFilters, setFinalFilters] = useState({});
+
+  const headerColumns = React.useMemo(() => {
+    if (visibleColumns === 'all') return columns;
+    return columns.filter((column) =>
+      Array.from(visibleColumns).includes(column.uid)
+    );
+  }, [visibleColumns]);
 
   const {
     data: productsObject,
     isLoading,
     isError,
     refetch,
-  } = useGetProductsQuery(currentPage, filters); // Pass currentPage and filters to the query
+  } = useGetProductsQuery({ currentPage, pageSize, filters: finalFilters });
+  useEffect(() => {
+    if (searchParams.get('update')) {
+      refetch();
+    }
+  }, []);
 
   const handleDeleteIconClick = (productId) => {
     setSelectedProductId(productId);
@@ -103,19 +119,84 @@ export default function ProductTable() {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-  const handleFiltersChange = (newFilters) => {
-    buildFiltersQueryString(newFilters);
-    setFilters(newFilters);
-    setCurrentPage(1); // Reset to the first page when filters change
+
+  const handlePageSizeChange = (event) => {
+    setPageSize(parseInt(event.target.value));
+  };
+  const onSearchChange = (value) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      search: value, // Update the search filter
+    }));
+    setCurrentPage(1); // Reset to the first page when search changes
+  };
+
+  const debouncedSearch = debounce(onSearchChange, 300); // Adjust the delay as needed
+
+  const handleSearchChange = (value) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      search: value,
+    }));
+    setCurrentPage(1);
+    debouncedSearch(value); // Call the debounced function
   };
 
   return (
     <>
       <div className='flex justify-between mb-7'>
         <div>
-          <h1 className='text-2xl'>Products</h1>
+          <Input
+            isClearable
+            classNames={{
+              base: 'w-full',
+              inputWrapper: 'border-1',
+            }}
+            placeholder='Search by name...'
+            size='md'
+            startContent={
+              <MagnifyingGlass size={24} className='mr-1' color='white' />
+            }
+            value={filters.search}
+            variant='bordered'
+            onClear={() => onSearchChange('')}
+            onValueChange={handleSearchChange}
+          />
         </div>
         <div className='flex'>
+          <Dropdown>
+            <DropdownTrigger className='hidden sm:flex mr-3'>
+              <Button
+                endContent={
+                  <CaretCircleDown
+                    size={24}
+                    className='mr-1'
+                    color='white'
+                    weight='fill'
+                  />
+                }
+                size='md'
+                variant='flat'
+              >
+                Columns
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              disallowEmptySelection
+              aria-label='Table Columns'
+              closeOnSelect={false}
+              selectedKeys={visibleColumns}
+              selectionMode='multiple'
+              onSelectionChange={setVisibleColumns}
+            >
+              {columns.map((column) => (
+                <DropdownItem key={column.uid} className='capitalize'>
+                  {column.key}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+
           {!isLoading && productsObject && productsObject.products && (
             <Button color='warning' className='mr-5'>
               <DownloadCSV filename='products' data={productsObject.products} />
@@ -172,13 +253,28 @@ export default function ProductTable() {
         selectedProductId={selectedProductId}
         onDeleteSuccess={handleDeletionSuccess}
       />
-      <div className='flex justify-center mt-5'>
+      <div className='flex justify-between mt-5'>
         <Pagination
           showControls
           total={productsObject && productsObject.pages}
           onChange={handlePageChange}
           page={currentPage}
         />
+        <div>
+          <label htmlFor='select'>Rows per page:{pageSize} </label>
+          <select
+            className='rounded-md'
+            id='select'
+            value={pageSize}
+            onChange={handlePageSizeChange}
+          >
+            {PageRows.map((item) => (
+              <option key={item.key} value={item.value}>
+                {item.key}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <DeleteProduct />
       <EditProductModal
