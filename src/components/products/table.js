@@ -74,6 +74,16 @@ export default function ProductTable() {
     }
   }, []);
 
+  useEffect(() => {
+    setFinalFilters({ ...filters });
+  }, [filters]);
+
+  useEffect(() => {
+    if (searchParams.get('update')) {
+      refetch();
+    }
+  }, [finalFilters]);
+
   const handleDeleteIconClick = (productId) => {
     setSelectedProductId(productId);
     setIsDeleteModalOpen(true);
@@ -108,14 +118,6 @@ export default function ProductTable() {
     setIsEditModalOpen(false);
   };
 
-  function buildFiltersQueryString(filters) {
-    const queryString = Object.keys(filters)
-      .map((key) => `${key}=${encodeURIComponent(filters[key])}`)
-      .join('&');
-
-    return queryString ? `&${queryString}` : '';
-  }
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -131,19 +133,9 @@ export default function ProductTable() {
     setCurrentPage(1); // Reset to the first page when search changes
   };
 
-  const debouncedSearch = debounce(onSearchChange, 300); // Adjust the delay as needed
-
-  const handleSearchChange = (value) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      search: value,
-    }));
-    setCurrentPage(1);
-    debouncedSearch(value); // Call the debounced function
-  };
-
   return (
     <>
+      {isError && 'Something went wrong!'}
       <div className='flex justify-between mb-7'>
         <div>
           <Input
@@ -160,7 +152,7 @@ export default function ProductTable() {
             value={filters.search}
             variant='bordered'
             onClear={() => onSearchChange('')}
-            onValueChange={handleSearchChange}
+            onValueChange={onSearchChange}
           />
         </div>
         <div className='flex'>
@@ -175,10 +167,8 @@ export default function ProductTable() {
                     weight='fill'
                   />
                 }
-                size='md'
-                variant='flat'
               >
-                Columns
+                Show Columns
               </Button>
             </DropdownTrigger>
             <DropdownMenu
@@ -214,17 +204,18 @@ export default function ProductTable() {
               className='mr-1'
               color='white'
               weight='fill'
-            />{' '}
+            />
             Add Products
           </Button>
         </div>
       </div>
       <Table
+        isStriped
         isLoading={isLoading}
         aria-label='Example table with dynamic content'
       >
-        <TableHeader>
-          {columns.map((column) => (
+        <TableHeader columns={headerColumns}>
+          {headerColumns.map((column) => (
             <TableColumn key={column.key}>{column.label}</TableColumn>
           ))}
         </TableHeader>

@@ -14,47 +14,26 @@ import {
   Button,
   Tooltip,
   Pagination,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Input,
 } from '@nextui-org/react';
 import { useGetUsersQuery } from '@/redux/services/userApi'; // Adjust the path as needed
 import DownloadCSV from '@/components/generic/csv'; // Adjust the path as needed
 import formatDateToDDMMYYYY from '@/utils/dateConvert';
 import PageRows from '@/data/pagesize';
-
-const statusColorMap = {
-  active: 'success',
-  paused: 'danger',
-  vacation: 'warning',
-};
-
-const columns = [
-  {
-    key: 'username',
-    label: 'USERNAME',
-  },
-  {
-    key: 'name',
-    label: 'NAME',
-  },
-  {
-    key: 'role',
-    label: 'ROLE',
-  },
-  {
-    key: 'email',
-    label: 'EMAIL',
-  },
-
-  {
-    key: 'createdAt',
-    label: 'DATE JOINED',
-  },
-  { label: 'Actions', key: 'actions' },
-];
-
+import { columns, INITIAL_VISIBLE_COLUMNS } from './columns/data';
+import { CaretCircleDown } from 'phosphor-react';
 export default function UserTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [filters, setFilters] = useState({});
+  const [visibleColumns, setVisibleColumns] = React.useState(
+    new Set(INITIAL_VISIBLE_COLUMNS)
+  );
+
   const {
     data: users,
     isLoading,
@@ -68,16 +47,55 @@ export default function UserTable() {
     setPageSize(parseInt(event.target.value));
   };
 
+  const headerColumns = React.useMemo(() => {
+    if (visibleColumns === 'all') return columns;
+    return columns.filter((column) =>
+      Array.from(visibleColumns).includes(column.uid)
+    );
+  }, [visibleColumns]);
+
   return (
     <>
       <div className='p-3'>
         <div className='flex justify-between'>
           <h1 className='text-2xl'>Users</h1>
-          {!isLoading && users && users.users && (
-            <Button color='warning' className='mr-5'>
-              <DownloadCSV filename='products' data={users.users} />
-            </Button>
-          )}
+          <div className='flex'>
+            <Dropdown>
+              <DropdownTrigger className='hidden sm:flex mr-3'>
+                <Button
+                  endContent={
+                    <CaretCircleDown
+                      size={24}
+                      className='mr-1'
+                      color='white'
+                      weight='fill'
+                    />
+                  }
+                >
+                  Show Columns
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label='Table Columns'
+                closeOnSelect={false}
+                selectedKeys={visibleColumns}
+                selectionMode='multiple'
+                onSelectionChange={setVisibleColumns}
+              >
+                {columns.map((column) => (
+                  <DropdownItem key={column.uid} className='capitalize'>
+                    {column.key}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            {!isLoading && users && users.users && (
+              <Button color='warning' className='mr-5'>
+                <DownloadCSV filename='products' data={users.users} />
+              </Button>
+            )}
+          </div>
         </div>
         <div className='mt-5'>
           <Table
@@ -85,7 +103,7 @@ export default function UserTable() {
             aria-label='Example table with dynamic content'
           >
             <TableHeader>
-              {columns.map((column) => (
+              {headerColumns.map((column) => (
                 <TableColumn key={column.key}>{column.label}</TableColumn>
               ))}
             </TableHeader>

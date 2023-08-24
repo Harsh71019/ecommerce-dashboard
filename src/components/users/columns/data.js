@@ -2,11 +2,13 @@ import {
   IdentificationBadge,
   ClipboardText,
   Tag,
-  Star,
-  CurrencyInr,
   BracketsAngle,
   ChartLineUp,
   Percent,
+  User,
+  Envelope,
+  Crosshair,
+  Calendar,
 } from 'phosphor-react';
 
 const columns = [
@@ -20,7 +22,23 @@ const columns = [
           weight='fill'
           name='Name'
         />
-        Product Name
+        Username
+      </div>
+    ),
+    key: 'username',
+    uid: 'username',
+  },
+  {
+    label: (
+      <div className='flex items-center'>
+        <User
+          size={24}
+          className='mr-1'
+          color='white'
+          weight='fill'
+          name='Name'
+        />
+        Name
       </div>
     ),
     key: 'name',
@@ -29,98 +47,51 @@ const columns = [
   {
     label: (
       <div className='flex items-center'>
-        <Tag
+        <Crosshair
           size={24}
           className='mr-1'
           color='white'
           weight='fill'
           name='Name'
         />
-        Product Category
+        Role
       </div>
     ),
-    key: 'category',
-    uid: 'category',
+    key: 'role',
+    uid: 'role',
+  },
+
+  {
+    label: (
+      <div className='flex items-center'>
+        <Envelope
+          size={24}
+          className='mr-1'
+          color='white'
+          weight='fill'
+          name='Name'
+        />
+        Email
+      </div>
+    ),
+    key: 'email',
+    uid: 'email',
   },
   {
     label: (
       <div className='flex items-center'>
-        <ClipboardText
+        <Calendar
           size={24}
           className='mr-1'
           color='white'
           weight='fill'
           name='Name'
         />
-        Product Brand
+        Date Joined
       </div>
     ),
-    key: 'brand',
-    uid: 'brand',
-  },
-  {
-    label: (
-      <div className='flex items-center'>
-        <CurrencyInr
-          size={24}
-          className='mr-1'
-          color='white'
-          weight='fill'
-          name='Name'
-        />
-        Product Price
-      </div>
-    ),
-    key: 'price',
-    uid: 'price',
-  },
-  {
-    label: (
-      <div className='flex items-center'>
-        <Percent
-          size={24}
-          className='mr-1'
-          color='white'
-          weight='fill'
-          name='Name'
-        />
-        Product Discount
-      </div>
-    ),
-    key: 'discountPercentage',
-    uid: 'discountPercentage',
-  },
-  {
-    label: (
-      <div className='flex items-center'>
-        <ChartLineUp
-          size={24}
-          className='mr-1'
-          color='white'
-          weight='fill'
-          name='Name'
-        />
-        Product Stock
-      </div>
-    ),
-    key: 'countInStock',
-    uid: 'countInStock',
-  },
-  {
-    label: (
-      <div className='flex items-center'>
-        <Star
-          size={24}
-          className='mr-1'
-          color='white'
-          weight='fill'
-          name='Name'
-        />
-        Product Rating
-      </div>
-    ),
-    key: 'rating',
-    uid: 'rating',
+    key: 'createdAt',
+    uid: 'createdAt',
   },
   {
     label: (
@@ -140,23 +111,13 @@ const columns = [
   },
 ];
 
-const statusColorMap = {
-  active: 'success',
-  paused: 'danger',
-  vacation: 'warning',
-};
-
 const INITIAL_VISIBLE_COLUMNS = [
+  'username',
   'name',
-  'category',
-  'brand',
-  'price',
-  'discountPercentage',
-  'countInStock',
-  'rating',
   'role',
-  'status',
+  'email',
+  'createdAt',
   'actions',
 ];
 
-export { columns, statusColorMap, INITIAL_VISIBLE_COLUMNS };
+export { columns, INITIAL_VISIBLE_COLUMNS };

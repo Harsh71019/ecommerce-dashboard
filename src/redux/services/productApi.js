@@ -17,8 +17,10 @@ export const productApi = createApi({
   endpoints: (builder) => ({
     getProducts: builder.query({
       query: (arg) => ({
-        url: `products?page=${arg.currentPage}&pageSize=${arg.pageSize}${
-          Object.keys(arg.filters).length !== 0 ? arg.filters : ''
+        url: `products?page=${arg.currentPage}&pageSize=${
+          arg.pageSize
+        }&search=${
+          Object.keys(arg.filters).length !== 0 ? arg.filters.search : ''
         }`,
       }),
     }),
